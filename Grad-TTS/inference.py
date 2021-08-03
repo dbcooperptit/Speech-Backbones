@@ -61,7 +61,7 @@ if __name__ == '__main__':
     with torch.no_grad():
         for i, text in enumerate(texts):
             print(f'Synthesizing {i} text...', end=' ')
-            x = torch.LongTensor(intersperse(text_to_sequence(text, dictionary=cmu), len(symbols))).cuda()[None]
+            x = torch.LongTensor(intersperse(text_to_sequence(text, ['basic_cleaners']), len(symbols))).cuda()[None]
             x_lengths = torch.LongTensor([x.shape[-1]]).cuda()
             
             t = dt.datetime.now()

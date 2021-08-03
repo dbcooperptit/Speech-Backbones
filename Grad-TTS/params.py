@@ -12,6 +12,7 @@ from model.utils import fix_len_compatibility
 train_filelist_path = 'resources/filelists/train.txt'
 valid_filelist_path = 'resources/filelists/valid.txt'
 test_filelist_path = 'resources/filelists/test.txt'
+text_cleaners = ["basic_cleaners"]
 n_feats = 80
 add_blank = True
 add_noise = True

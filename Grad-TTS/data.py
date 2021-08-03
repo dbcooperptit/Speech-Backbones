@@ -67,7 +67,7 @@ class TextMelDataset(torch.utils.data.Dataset):
         return melspec
 
     def get_text(self, text):
-        text_norm = text_to_sequence(text)
+        text_norm = text_to_sequence(text, self.text_cleaners)
         if self.add_blank:
             text_norm = intersperse(text_norm, len(symbols))  # add a blank token, whose id number is len(symbols)
         text_norm = torch.IntTensor(text_norm)
