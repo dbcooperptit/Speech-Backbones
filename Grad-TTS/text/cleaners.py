@@ -4,7 +4,6 @@ import re
 from unidecode import unidecode
 from .numbers import normalize_numbers
 
-
 _whitespace_re = re.compile(r'\s+')
 
 _abbreviations = [(re.compile('\\b%s\\.' % x[0], re.IGNORECASE), x[1]) for x in [
@@ -47,6 +46,20 @@ def collapse_whitespace(text):
     return re.sub(_whitespace_re, ' ', text)
 
 
+def to_phonemes(text: str, lang: str) -> str:
+    phonemes = phonemize(text,
+                         language=lang,
+                         backend='espeak',
+                         strip=True,
+                         preserve_punctuation=True,
+                         with_stress=False,
+                         njobs=1,
+                         punctuation_marks=';:,.!?¡¿—…"«»“”()',
+                         language_switch='remove-flags')
+    phonemes = ''.join([p for p in phonemes if p in phonemes_set])
+    return phonemes
+
+
 def convert_to_ascii(text):
     return unidecode(text)
 
@@ -54,7 +67,8 @@ def convert_to_ascii(text):
 def basic_cleaners(text):
     text = lowercase(text)
     text = collapse_whitespace(text)
-    return text
+    phonemes = to_phonemes(text, "vi")
+    return phonemes
 
 
 def transliteration_cleaners(text):

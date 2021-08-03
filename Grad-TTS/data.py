@@ -12,31 +12,62 @@ import torch
 
 from text import text_to_sequence, cmudict
 from text.symbols import symbols
-from utils import parse_filelist, intersperse
+from utils import parse_filelist, intersperse, load_wav_to_torch
 from model.utils import fix_len_compatibility
 from params import seed as random_seed
+import tacotron_stft
 
 
 class TextMelDataset(torch.utils.data.Dataset):
-    def __init__(self, filelist_path, cmudict_path, add_blank=True):
+    def __init__(self, filelist_path, hparams):
         self.filepaths_and_text = parse_filelist(filelist_path)
-        self.cmudict = cmudict.CMUDict(cmudict_path)
-        self.add_blank = add_blank
-        random.seed(random_seed)
+        self.add_blank = hparams.add_blank
+        self.text_cleaners = hparams.text_cleaners
+        self.max_wav_value = hparams.max_wav_value
+        self.sampling_rate = hparams.sampling_rate
+        self.load_mel_from_disk = hparams.load_mel_from_disk
+        self.add_noise = hparams.add_noise
+        self.add_blank = getattr(hparams, "add_blank", False)  # improved version
+        self.min_text_len = getattr(hparams, "min_text_len", 1)
+        self.max_text_len = getattr(hparams, "max_text_len", 190)
+        # if getattr(hparams, "cmudict_path", None) is not None:
+        #   self.cmudict = cmudict.CMUDict(hparams.cmudict_path)
+        self.stft = tacotron_stft.TacotronSTFT(
+            hparams.filter_length, hparams.hop_length, hparams.win_length,
+            hparams.n_mel_channels, hparams.sampling_rate, hparams.mel_fmin,
+            hparams.mel_fmax)
+
+        self._filter_text_len()
         random.shuffle(self.filepaths_and_text)
 
     def get_pair(self, filepath_and_text):
         filepath, text = filepath_and_text[0], filepath_and_text[1]
-        text = self.get_text(text, add_blank=self.add_blank)
+        text = self.get_text(text)
         mel = self.get_mel(filepath)
         return (text, mel)
 
     def get_mel(self, filepath):
-        mel = torch.from_numpy(np.load(filepath)).float()
-        return mel
+        if not self.load_mel_from_disk:
+            audio, sampling_rate = load_wav_to_torch(filepath)
+            if sampling_rate != self.stft.sampling_rate:
+                raise ValueError("{} {} SR doesn't match target {} SR".format(
+                    sampling_rate, self.stft.sampling_rate))
+            if self.add_noise:
+                audio = audio + torch.rand_like(audio)
+            audio_norm = audio / self.max_wav_value
+            audio_norm = audio_norm.unsqueeze(0)
+            melspec = self.stft.mel_spectrogram(audio_norm)
+            melspec = torch.squeeze(melspec, 0)
+        else:
+            melspec = torch.from_numpy(np.load(filepath))
+            assert melspec.size(0) == self.stft.n_mel_channels, (
+                'Mel dimension mismatch: given {}, expected {}'.format(
+                    melspec.size(0), self.stft.n_mel_channels))
 
-    def get_text(self, text, add_blank=True):
-        text_norm = text_to_sequence(text, dictionary=self.cmudict)
+        return melspec
+
+    def get_text(self, text):
+        text_norm = text_to_sequence(text)
         if self.add_blank:
             text_norm = intersperse(text_norm, len(symbols))  # add a blank token, whose id number is len(symbols)
         text_norm = torch.IntTensor(text_norm)

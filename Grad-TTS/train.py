@@ -58,12 +58,12 @@ if __name__ == "__main__":
     logger = SummaryWriter(log_dir=log_dir)
 
     print('Initializing data loaders...')
-    train_dataset = TextMelDataset(train_filelist_path, cmudict_path, add_blank)
+    train_dataset = TextMelDataset(train_filelist_path, params)
     batch_collate = TextMelBatchCollate()
     loader = DataLoader(dataset=train_dataset, batch_size=batch_size,
                         collate_fn=batch_collate, drop_last=True,
                         num_workers=4, shuffle=False)
-    test_dataset = TextMelDataset(valid_filelist_path, cmudict_path, add_blank)
+    test_dataset = TextMelDataset(valid_filelist_path, params)
 
     print('Initializing model...')
     model = GradTTS(nsymbols, n_enc_channels, filter_channels, filter_channels_dp, 
