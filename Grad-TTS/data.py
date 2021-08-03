@@ -37,7 +37,8 @@ class TextMelDataset(torch.utils.data.Dataset):
             hparams.n_mel_channels, hparams.sampling_rate, hparams.mel_fmin,
             hparams.mel_fmax)
 
-        self._filter_text_len()
+        # self._filter_text_len()
+        random.seed(1234)
         random.shuffle(self.filepaths_and_text)
 
     def get_pair(self, filepath_and_text):

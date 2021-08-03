@@ -2,6 +2,8 @@
 
 import re
 from unidecode import unidecode
+from phonemizer import phonemize
+from .symbols import symbols_set
 from .numbers import normalize_numbers
 
 _whitespace_re = re.compile(r'\s+')
@@ -56,7 +58,7 @@ def to_phonemes(text: str, lang: str) -> str:
                          njobs=1,
                          punctuation_marks=';:,.!?¡¿—…"«»“”()',
                          language_switch='remove-flags')
-    phonemes = ''.join([p for p in phonemes if p in phonemes_set])
+    phonemes = ''.join([p for p in phonemes if p in symbols_set])
     return phonemes
 
 
