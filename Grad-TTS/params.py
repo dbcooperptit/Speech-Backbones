@@ -13,6 +13,7 @@ train_filelist_path = 'resources/filelists/train.txt.cleaned'
 valid_filelist_path = 'resources/filelists/valid.txt.cleaned'
 test_filelist_path = 'resources/filelists/test.txt.cleaned'
 text_cleaners = ["basic_cleaners"]
+cleaned_text = True
 n_feats = 80
 add_blank = True
 add_noise = True
