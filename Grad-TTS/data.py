@@ -10,7 +10,7 @@ import random
 import numpy as np
 import torch
 
-from text import text_to_sequence, cmudict
+from text import text_to_sequence, cleaned_text_to_sequence
 from text.symbols import symbols
 from utils import parse_filelist, intersperse, load_wav_to_torch
 from model.utils import fix_len_compatibility
@@ -27,6 +27,7 @@ class TextMelDataset(torch.utils.data.Dataset):
         self.sampling_rate = hparams.sampling_rate
         self.load_mel_from_disk = hparams.load_mel_from_disk
         self.add_noise = hparams.add_noise
+        self.cleaned_text = hparams.cleaned_text
         self.add_blank = getattr(hparams, "add_blank", False)  # improved version
         self.min_text_len = getattr(hparams, "min_text_len", 1)
         self.max_text_len = getattr(hparams, "max_text_len", 190)
@@ -68,7 +69,10 @@ class TextMelDataset(torch.utils.data.Dataset):
         return melspec
 
     def get_text(self, text):
-        text_norm = text_to_sequence(text, self.text_cleaners)
+        if self.cleaned_text:
+            text_norm = cleaned_text_to_sequence(text)
+        else:
+            text_norm = text_to_sequence(text, self.text_cleaners)
         if self.add_blank:
             text_norm = intersperse(text_norm, len(symbols))  # add a blank token, whose id number is len(symbols)
         text_norm = torch.IntTensor(text_norm)
