@@ -10,23 +10,12 @@ _id_to_symbol = {i: s for i, s in enumerate(symbols)}
 _curly_re = re.compile(r'(.*?)\{(.+?)\}(.*)')
 
 
-def text_to_sequence(text, cleaner_names=["english_cleaners"]):
+def text_to_sequence(text, cleaner_names=["basic_cleaners"]):
     sequence = []
     clean_text = _clean_text(text, cleaner_names)
     for symbol in clean_text:
         symbol_id = _symbol_to_id[symbol]
         sequence += [symbol_id]
-    return sequence
-
-
-def cleaned_text_to_sequence(cleaned_text):
-    '''Converts a string of text to a sequence of IDs corresponding to the symbols in the text.
-      Args:
-        text: string to convert to a sequence
-      Returns:
-        List of integers corresponding to the symbols in the text
-    '''
-    sequence = [_symbol_to_id[symbol] for symbol in cleaned_text]
     return sequence
 
 
@@ -56,3 +45,7 @@ def cleaned_text_to_sequence(cleaned_text):
     '''
     sequence = [_symbol_to_id[symbol] for symbol in cleaned_text]
     return sequence
+
+
+if __name__ == '__main__':
+    text_to_sequence()

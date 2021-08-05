@@ -54,8 +54,8 @@ def to_phonemes(text: str, lang: str) -> str:
                          backend='espeak',
                          strip=True,
                          preserve_punctuation=True,
-                         with_stress=False,
-                         njobs=1,
+                         with_stress=True,
+                         njobs=2,
                          punctuation_marks=';:,.!?¡¿—…"«»“”()',
                          language_switch='remove-flags')
     phonemes = ''.join([p for p in phonemes if p in symbols_set])
