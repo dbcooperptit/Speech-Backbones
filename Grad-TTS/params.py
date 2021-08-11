@@ -9,9 +9,11 @@
 from model.utils import fix_len_compatibility
 
 # data parameters
-train_filelist_path = 'resources/filelists/train.txt.cleaned'
-valid_filelist_path = 'resources/filelists/valid.txt.cleaned'
-test_filelist_path = 'resources/filelists/test.txt.cleaned'
+train_filelist_path = 'resources/filelists/train.txt'
+valid_filelist_path = 'resources/filelists/valid.txt'
+test_filelist_path = 'resources/filelists/test.txt'
+cmudict_path = 'resources/v2_lexicon.txt'
+
 text_cleaners = ["basic_cleaners"]
 cleaned_text = True
 n_feats = 80
