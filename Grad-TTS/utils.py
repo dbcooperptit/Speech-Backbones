@@ -10,7 +10,7 @@ import os
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
-import soundfile as sf
+from scipy.io.wavfile import read
 import torch
 
 
@@ -52,7 +52,7 @@ def save_figure_to_numpy(fig):
 
 
 def load_wav_to_torch(full_path):
-    data, sampling_rate = sf.read(full_path)
+    sampling_rate, data = read(full_path)
     return torch.FloatTensor(data.astype(np.float32)), sampling_rate
 
 
