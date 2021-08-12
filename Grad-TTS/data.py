@@ -10,7 +10,7 @@ import random
 import numpy as np
 import torch
 
-from text import text_to_sequence,cmudict
+from text import text_to_sequence, cleaned_text_to_sequence
 from text.symbols import symbols
 from utils import parse_filelist, intersperse, load_wav_to_torch
 from model.utils import fix_len_compatibility
@@ -31,8 +31,8 @@ class TextMelDataset(torch.utils.data.Dataset):
         self.add_blank = getattr(hparams, "add_blank", False)  # improved version
         self.min_text_len = getattr(hparams, "min_text_len", 1)
         self.max_text_len = getattr(hparams, "max_text_len", 190)
-        if getattr(hparams, "cmudict_path", None) is not None:
-          self.cmudict = cmudict.CMUDict(hparams.cmudict_path)
+        # if getattr(hparams, "cmudict_path", None) is not None:
+        #   self.cmudict = cmudict.CMUDict(hparams.cmudict_path)
         self.stft = tacotron_stft.TacotronSTFT(
             hparams.filter_length, hparams.hop_length, hparams.win_length,
             hparams.n_mel_channels, hparams.sampling_rate, hparams.mel_fmin,
@@ -68,8 +68,11 @@ class TextMelDataset(torch.utils.data.Dataset):
 
         return melspec
 
-    def get_text(self, text, add_blank=True):
-        text_norm = text_to_sequence(text, dictionary=self.cmudict)
+    def get_text(self, text):
+        if self.cleaned_text:
+            text_norm = cleaned_text_to_sequence(text)
+        else:
+            text_norm = text_to_sequence(text, self.text_cleaners)
         if self.add_blank:
             text_norm = intersperse(text_norm, len(symbols))  # add a blank token, whose id number is len(symbols)
         text_norm = torch.IntTensor(text_norm)
