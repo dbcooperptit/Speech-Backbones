@@ -3,7 +3,7 @@
 from text import cmudict
 
 _pad        = '_'
-_punctuation = '!\'(),.:;?"() '
+_punctuation = ';:,.!?¡¿—…"«»“”() '
 _special = '-'
 _letters = '0123546789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
