@@ -8,24 +8,15 @@
 
 from model.utils import fix_len_compatibility
 
+
 # data parameters
-train_filelist_path = 'resources/filelists/train.txt.cleaned'
-valid_filelist_path = 'resources/filelists/valid.txt.cleaned'
-test_filelist_path = 'resources/filelists/test.txt.cleaned'
-text_cleaners = ["basic_cleaners"]
-cleaned_text = True
+train_filelist_path = 'resources/filelists/train.txt'
+valid_filelist_path = 'resources/filelists/valid.txt'
+test_filelist_path = 'resources/filelists/test.txt'
+cmudict_path = 'resources/v2_lexicon.txt'
 n_feats = 80
 add_blank = True
-add_noise = True
-load_mel_from_disk = False
-max_wav_value = 32768.0
-sampling_rate = 22050
-filter_length = 1024
-hop_length = 256
-win_length = 1024
-n_mel_channels = 80
-mel_fmin = 0.0
-mel_fmax = 8000.0
+
 # encoder parameters
 n_enc_channels = 192
 filter_channels = 768
@@ -35,6 +26,7 @@ enc_kernel = 3
 enc_dropout = 0.1
 n_heads = 2
 window_size = 4
+
 # decoder parameters
 dec_dim = 64
 beta_min = 0.05
@@ -49,4 +41,4 @@ batch_size = 16
 learning_rate = 1e-4
 seed = 37
 save_every = 1
-out_size = fix_len_compatibility(2 * 22050 // 256)
+out_size = fix_len_compatibility(2*22050//256)

@@ -2,9 +2,8 @@
 
 import re
 from unidecode import unidecode
-from phonemizer import phonemize
-from .symbols import symbols_set
 from .numbers import normalize_numbers
+
 
 _whitespace_re = re.compile(r'\s+')
 
@@ -48,20 +47,6 @@ def collapse_whitespace(text):
     return re.sub(_whitespace_re, ' ', text)
 
 
-def to_phonemes(text: str, lang: str) -> str:
-    phonemes = phonemize(text,
-                         language=lang,
-                         backend='espeak',
-                         strip=True,
-                         preserve_punctuation=True,
-                         with_stress=True,
-                         njobs=2,
-                         punctuation_marks=';:,.!?¡¿—…"«»“”()',
-                         language_switch='remove-flags')
-    phonemes = ''.join([p for p in phonemes if p in symbols_set])
-    return phonemes
-
-
 def convert_to_ascii(text):
     return unidecode(text)
 
@@ -69,8 +54,7 @@ def convert_to_ascii(text):
 def basic_cleaners(text):
     text = lowercase(text)
     text = collapse_whitespace(text)
-    phonemes = to_phonemes(text, "vi")
-    return phonemes
+    return text
 
 
 def transliteration_cleaners(text):
